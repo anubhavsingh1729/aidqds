@@ -1,0 +1,11 @@
+roadmap/
+data/
+.DS_Store
+__pycache__/
+*.pyc
+*.pkl
+*.h5
+*.log
+build/
+node_modules/
+dist/
