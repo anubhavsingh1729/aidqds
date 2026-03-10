@@ -9,6 +9,6 @@ __pycache__/
 build/
 node_modules/
 dist/
-.ipynb_checkpoints/
 extra/
+.ipynb_checkpoints/
 anaconda_projects/
