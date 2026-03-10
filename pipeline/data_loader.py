@@ -10,7 +10,7 @@ create view if not exists raw_trips AS
             SELECT * FROM read_parquet('../data/raw/*.parquet')
 """)
 
-#create a table in duckdb with selected columns from raw_trips. This will be our baseline query table.
+#create a table in duckdb with selected columns from raw_trips. This will be the baseline query table.
 con.execute("""
 create table if not exists processed_trips AS
         SELECT 
@@ -25,7 +25,7 @@ create table if not exists processed_trips AS
             passenger_count,
             payment_type
         from raw_trips
-        where trip_distance >0
+        where trip_distance > 0
 """)
 
 
