@@ -24,9 +24,16 @@ create table if not exists processed_trips AS
             trip_distance,
             passenger_count,
             payment_type
-        from raw_trips
-        where trip_distance > 0
+        FROM raw_trips
+            
+        WHERE tpep_pickup_datetime IS NOT NULL
+            AND passenger_count BETWEEN 1 and 6
+            AND trip_distance > 0
+            AND fare_amount > 3.00
+            AND
+            ( trip_distance < 0.5 OR fare_amount/trip_distance <= 28.1 )
 """)
 
+# threshold value 28.1 is derived in analysis notebook. For details refer to data_cleaning.md
 
-print(con.execute("""Select * from processed_trips limit 10""").df())
+con.close()
