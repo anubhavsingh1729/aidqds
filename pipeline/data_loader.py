@@ -27,13 +27,14 @@ create table if not exists processed_trips AS
         FROM raw_trips
             
         WHERE tpep_pickup_datetime IS NOT NULL
-            AND passenger_count BETWEEN 1 and 6
-            AND trip_distance > 0
+            AND (passenger_count BETWEEN 1 AND 6 OR payment_type == 0) -- for payment_type 0, passenger_count is not recorded
+            AND trip_distance BETWEEN 0.6 AND 75 -- value derived in the analysis notebook. For details refer to data_cleaning.md
             AND fare_amount > 3.00
-            AND
-            ( trip_distance < 0.5 OR fare_amount/trip_distance <= 28.1 )
+            AND fare_amount/trip_distance <= 19.0
 """)
 
-# threshold value 28.1 is derived in analysis notebook. For details refer to data_cleaning.md
+# threshold value 19.0 is derived in analysis notebook. For details refer to data_cleaning.md
+
+#con.execute("""COPY processed_trips TO '../data/processed/processed_trips.parquet' (FORMAT parquet); """)
 
 con.close()
