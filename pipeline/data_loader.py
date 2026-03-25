@@ -14,10 +14,11 @@ create view if not exists raw_trips AS
 con.execute("""
 create table if not exists processed_trips AS
         SELECT 
-            tpep_pickup_datetime,
-            DATE_TRUNC('hour',tpep_pickup_datetime) AS pickup_hour,   
-            DAYOFWEEK(tpep_pickup_datetime) AS day_of_week,
-            HOUR(tpep_pickup_datetime) AS hour_of_day,
+            CAST(tpep_pickup_datetime AS TIMESTAMP) AS pickup_datetime,
+            CAST(tpep_dropoff_datetime AS TIMESTAMP) AS dropoff_datetime,
+            DAYOFWEEK(pickup_datetime) AS day_of_week,
+            HOUR(pickup_datetime) AS hour_of_day,
+            EXTRACT(EPOCH FROM (dropoff_datetime - pickup_datetime)) AS trip_duration_sec,
             PULocationID,
             DOLocationID,
             fare_amount,
@@ -31,10 +32,13 @@ create table if not exists processed_trips AS
             AND trip_distance BETWEEN 0.6 AND 75 -- value derived in the analysis notebook. For details refer to data_cleaning.md
             AND fare_amount > 3.00
             AND fare_amount/trip_distance <= 19.0
+            AND dropoff_datetime>= '2025-01-01 00:00:00'
+            AND pickup_datetime>='2025-01-01 00:00:00'
+            AND trip_duration_sec >= 120 --trip duration should be atleast 2 minutes. Anything less is most possible corrupt or invalid/cancelled trips.
 """)
 
 # threshold value 19.0 is derived in analysis notebook. For details refer to data_cleaning.md
 
-#con.execute("""COPY processed_trips TO '../data/processed/processed_trips.parquet' (FORMAT parquet); """)
+con.execute("""COPY processed_trips TO '../data/processed/processed_trips.parquet' (FORMAT parquet); """)
 
 con.close()
