@@ -1,4 +1,10 @@
+from collections import defaultdict, deque
+
 import duckdb
+import pandas as pd
+import numpy as np
+
+import pickle
 
 
 con = duckdb.connect("../data/aidqds.db")
@@ -36,27 +42,38 @@ SELECT DISTINCT pickup_hour
 # con.close()
 
 
-# --------------------
+# -------------------- baseline stats -------------------------------- #
 
 con = duckdb.connect("../data/aidqds.db")
 
-time_buckets = {}
-
-hours = con.execute(""" SELECT DISTINCT pickup_hour from processed_trips
-                    ORDER BY pickup_hour""").df()['pickup_hour'].tolist()
-
-baseline = {}
-
-
-batch = con.execute(""" SELECT HOUR(pickup_hour) AS hour_of_day, day_of_week, PULocationID, 
-                    COUNT(*) AS trip_count, AVG(trip_distance) AS avg_distance, AVG(fare_amount) AS avg_fare
-                    FROM processed_trips
-                    GROUP BY hour_of_day, day_of_week, PULocationID
-                    """).df()
-
-for _,row in batch.iterrows():
-    baseline[(row['hour_of_day'], row['day_of_week'], row['PULocationID'])] = (row['trip_count'], row['avg_distance'], row['avg_fare'])
+dt = con.execute("""SELECT HOUR(pickup_hour) AS hour_of_day, day_of_week, PULocationID, pickup_hour,
+                 count(*) AS trip_count,
+                 AVG(trip_distance) AS avg_distance,
+                 AVG(fare_amount) AS avg_fare,
+                 AVG(trip_duration_sec) AS avg_duration_sec
+                 FROM processed_trips
+                 GROUP BY hour_of_day, day_of_week, PULocationID, pickup_hour
+                 order by pickup_hour""").df()
 
 
-print(batch[(batch['hour_of_day'] == 15) & (batch['day_of_week']==1) & (batch['PULocationID']==121)])
-print(baseline[(15,1,121)])
+baseline = defaultdict(lambda: deque(maxlen=8))
+
+for _,row in dt.iterrows():
+    key = (row['hour_of_day'], row['day_of_week'], row['PULocationID'])
+    
+    baseline[key].append({
+        'trip_count':row['trip_count'],
+        'avg_distance':row['avg_distance'],
+        'avg_fare':row['avg_fare'],
+        'avg_duration_sec':row['avg_duration_sec'],
+        'avg_speed':row['avg_distance']/(row['avg_duration_sec']/3600) if row['avg_duration_sec'] > 0 else 0,
+        'pickup_hour': row['pickup_hour']
+    })
+
+# ------- save baseline dictionary ------- #
+with open("../data/processed/baseline.pkl","wb") as f:
+    pickle.dump(dict(baseline), f)
+
+print("baseline stats saved")
+
+
