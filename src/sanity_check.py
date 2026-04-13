@@ -34,3 +34,4 @@ k = (9,0,161)
 for obs in baseline[k]:
     if obs['trip_count']==51:
         print(obs['pickup_hour'])
+
