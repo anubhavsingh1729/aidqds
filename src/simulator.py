@@ -51,31 +51,30 @@ q = queue.Queue()
 
 
 def process():
-    while not q.empty():
-        batch = q.get()
+    batch = q.get()
 
-        hod = batch['hour_of_day'].iloc[0]
-        dow = batch['day_of_week'].iloc[0]
-        hour = batch['pickup_hour'].iloc[0]
+    hod = batch['hour_of_day'].iloc[0]
+    dow = batch['day_of_week'].iloc[0]
+    hour = batch['pickup_hour'].iloc[0]
 
-        print(f"\nHour: {hour}, number of trips: {len(batch):,}")
-        print("-" * 50)
+    print(f"\nHour: {hour}, number of trips: {len(batch):,}")
+    print("-" * 50)
 
-        #zone wise aggregation
-        zone_agg = batch.groupby('PULocationID').agg(
-            trip_count= ('trip_distance', 'count'),
-            avg_distance= ('trip_distance', 'mean'),
-            avg_fare= ('fare_amount', 'mean'),
-            avg_duration_sec= ('trip_duration_sec', 'mean')
-        ).reset_index()
+    #zone wise aggregation
+    zone_agg = batch.groupby('PULocationID').agg(
+        trip_count= ('trip_distance', 'count'),
+        avg_distance= ('trip_distance', 'mean'),
+        avg_fare= ('fare_amount', 'mean'),
+        avg_duration_sec= ('trip_duration_sec', 'mean')
+    ).reset_index()
 
-        for _, row in zone_agg.iterrows():
-            zone = int(row['PULocationID'])
-            count = int(row['trip_count'])
-            key = (hod, dow, zone)
-            print(f"Zone: {zone:>3} | trips : {count:>6} "
-                  f" Fare : ${row['avg_fare']:>6.2f} | "
-                  f"Distance: {row['avg_distance']:>5.2f} mi")
+    for _, row in zone_agg.iterrows():
+        zone = int(row['PULocationID'])
+        count = int(row['trip_count'])
+        key = (hod, dow, zone)
+        print(f"Zone: {zone:>3} | trips : {count:>6} "
+                f" Fare : ${row['avg_fare']:>6.2f} | "
+                f"Distance: {row['avg_distance']:>5.2f} mi")
 
 for uh in unique_hours[:5]:
     batch = con.execute("""SELECT HOUR(pickup_hour) AS hour_of_day, *
