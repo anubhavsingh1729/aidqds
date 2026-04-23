@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import duckdb
 
+
 con = duckdb.connect("../data/aidqds.db")  #connect to duckdb database, if it doesn't exist it will be created
 
 #create a view in duckdb to read all parquet files in the data/raw directory
@@ -13,6 +14,9 @@ create view if not exists raw_trips AS
 #create a table in duckdb with selected columns from raw_trips. This will be the baseline query table.
 con.execute("""
 create table if not exists processed_trips AS
+            SELECT *, 
+            (trip_distance * 3600) / trip_duration_sec AS speed_mph
+            FROM (
         SELECT 
             CAST(tpep_pickup_datetime AS TIMESTAMP) AS pickup_datetime,
             CAST(tpep_dropoff_datetime AS TIMESTAMP) AS dropoff_datetime,
@@ -36,6 +40,7 @@ create table if not exists processed_trips AS
             AND dropoff_datetime>= '2025-01-01 00:00:00'
             AND pickup_datetime>='2025-01-01 00:00:00'
             AND trip_duration_sec >= 120 --trip duration should be atleast 2 minutes. Anything less is most possible corrupt or invalid/cancelled trips.
+        )
 """)
 
 # threshold value 19.0 is derived in analysis notebook. For details refer to data_cleaning.md

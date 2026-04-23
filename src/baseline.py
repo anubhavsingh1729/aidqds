@@ -50,13 +50,14 @@ dt = con.execute("""SELECT HOUR(pickup_hour) AS hour_of_day, day_of_week, PULoca
                  count(*) AS trip_count,
                  AVG(trip_distance) AS avg_distance,
                  AVG(fare_amount) AS avg_fare,
-                 AVG(trip_duration_sec) AS avg_duration_sec
+                 AVG(trip_duration_sec) AS avg_duration_sec,
+                 AVG(speed_mph) AS avg_speed
                  FROM processed_trips
                  GROUP BY hour_of_day, day_of_week, PULocationID, pickup_hour
                  order by pickup_hour""").df()
 
 
-baseline = defaultdict(lambda: deque(maxlen=8))
+baseline = defaultdict(lambda: deque(maxlen=25))
 
 for _,row in dt.iterrows():
     key = (row['hour_of_day'], row['day_of_week'], row['PULocationID'])
@@ -66,7 +67,7 @@ for _,row in dt.iterrows():
         'avg_distance':row['avg_distance'],
         'avg_fare':row['avg_fare'],
         'avg_duration_sec':row['avg_duration_sec'],
-        'avg_speed':row['avg_distance']/(row['avg_duration_sec']/3600) if row['avg_duration_sec'] > 0 else 0,
+        'avg_speed':row['avg_speed'],
         'pickup_hour': row['pickup_hour']
     })
 
