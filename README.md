@@ -1,12 +1,12 @@
-# Anomaly Detection in Urban Transportation Systems
+# AI based Anomaly Detection and Diagnosis in Urban Transportation Systems (NYC Yellow Taxi Trips)
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![DuckDB](https://img.shields.io/badge/DuckDB-1.5.0-green.svg)](https://duckdb.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A comprehensive system for real-time anomaly detection in urban taxi transportation data, enabling proactive monitoring of transportation network health through statistical analysis of spatio-temporal patterns.
+A comprehensive system for real-time anomaly detection and AI based diagnosis in urban taxi transportation data, enabling proactive monitoring of transportation network health through statistical analysis of spatio-temporal patterns.
 
-## 🚀 Features
+## Features
 
 - **Real-time Anomaly Detection**: Streaming processing of taxi trip data with immediate anomaly identification
 - **Spatio-temporal Analysis**: Zone-level and time-specific pattern recognition using historical baselines
@@ -15,7 +15,7 @@ A comprehensive system for real-time anomaly detection in urban taxi transportat
 - **Data Quality Assurance**: Comprehensive filtering and validation of raw transportation data
 - **Interactive Dashboard**: Web-based visualization for anomaly monitoring and analysis
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Problem Statement](#problem-statement)
 - [Methodology](#methodology)
@@ -27,7 +27,7 @@ A comprehensive system for real-time anomaly detection in urban taxi transportat
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Urban transportation systems generate vast amounts of data from taxi operations. Anomalies in this data can indicate critical issues such as:
 
@@ -38,13 +38,14 @@ Urban transportation systems generate vast amounts of data from taxi operations.
 
 Traditional batch processing fails to detect anomalies in real-time, allowing issues to propagate. This system implements streaming anomaly detection that processes hourly aggregated data at the zone level, comparing current metrics against historical baselines.
 
-## 🔬 Methodology
+## Methodology
 
 ### Core Algorithm
 
 The system employs statistical process control using Z-scores to detect deviations from baseline behavior:
 
 **Features Monitored**:
+- trip count
 - Average trip speed (mph)
 - Average trip distance
 - Average fare amount
@@ -62,7 +63,7 @@ The system employs statistical process control using Z-scores to detect deviatio
 - **Streaming Pipeline**: Threaded producer-consumer pattern
 - **Statistical Engine**: Configurable Z-score thresholds with minimum variance floors
 
-## 🛠 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -94,7 +95,7 @@ The system employs statistical process control using Z-scores to detect deviatio
    mkdir -p data/{raw,processed,test}
    ```
 
-## 📖 Usage
+## Usage
 
 ### Data Preparation
 
@@ -126,7 +127,7 @@ npm run dev
 
 Access the dashboard at `http://localhost:5173` for visualization of anomaly patterns.
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 anomaly-detection/
@@ -155,7 +156,7 @@ anomaly-detection/
 └── extra/                     # Additional resources
 ```
 
-## 🔄 Data Pipeline
+##  Data Pipeline
 
 ### Input Data
 - **Source**: NYC Yellow Taxi trip records (Parquet format)
@@ -176,7 +177,7 @@ anomaly-detection/
 - Feature-specific deviation scores
 - Real-time processing statistics
 
-## ⚙ Configuration
+## Configuration
 
 ### Anomaly Thresholds
 
@@ -198,7 +199,7 @@ Update paths in source files:
 - `BASELINE_PATH`: Pickled baseline statistics
 - `FILE_PATH`: Test data file
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -213,17 +214,17 @@ Update paths in source files:
 - Update documentation for API changes
 - Ensure all tests pass before submitting
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Simulator Technical Documentation](simulator_explanation.md)
 - [Data Cleaning Guide](data_cleaning.md)
 - [Analysis Notebook](analysis_notebook.ipynb)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - NYC Taxi and Limousine Commission for open data
 - DuckDB community for the analytical database
